@@ -194,7 +194,7 @@ class CreateProfileView(View):
         form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return HttpResponseRedirect('/')
         else:
             return render(request, "registration/create-account.html", {"form": form})

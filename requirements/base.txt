@@ -5,4 +5,6 @@ dj-email-url==0.0.10
 psycopg2==2.6.2
 django-bootstrap-form==3.2.1
 markdown2==2.3.3
+pyelliptic==1.5.7
 pywebpush==0.8.0
+social-auth-app-django==1.1.0

@@ -142,7 +142,7 @@ class PostsManager(models.Manager):
             .annotate(score=F('upvotes') - F('downvotes'))\
             .select_related("author").get(pk=post_id)
 
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             content_type = ContentType.objects.get_for_model(Post)
             post_votes = Vote.objects.filter(content_type=content_type.id,
                 object_id=post_id, type_of_vote__in=(UPVOTE, DOWNVOTE),
@@ -302,7 +302,7 @@ class Comment(Votable):
         ]
     objects = CommentsManager()
 
-    post = models.ForeignKey(Post, related_name="comments")
+    post = models.ForeignKey(Post, on_delete=models.PROTECT, related_name="comments")
     parent_comment = models.ForeignKey('self', 
                 null=True, blank=True,
                 on_delete=models.PROTECT)

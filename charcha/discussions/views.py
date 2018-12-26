@@ -19,7 +19,7 @@ from .models import Post, Comment, Vote, User
 
 def homepage(request):
     user = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user = request.user
     posts = Post.objects.recent_posts_with_my_votes(user)
     return render(request, "home.html", context={"posts": posts})

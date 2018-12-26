@@ -12,7 +12,7 @@
 <div class="posts">
   {% for post in posts %}
     <div class="post">
-    {% include "partials/post-vote-control.html" with obj_type='posts' obj=post %}
+    
     <div>
         <div class="post-title">
           <a href="{% url 'discussion' post.id %}">
@@ -22,7 +22,6 @@
         <div class="post-line-2">
           <div class="post-score">
               by {{ post.author }} |
-              {{ post.score }} points |  
               {{ post.num_comments }} comment{{ post.num_comments|pluralize }} |
               {{ post.submission_time | naturaltime }}
               {% if request.user.is_staff %}

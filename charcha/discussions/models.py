@@ -313,8 +313,8 @@ class Comment(Votable):
     # Format is .0000.0000.0000.0000.0000.0000
     # This means that:
     # 1. We only allow 9999 comments at each level
-    # 2. We allow threaded comments upto 6 levels
-    wbs = models.CharField(max_length=30)
+    # 2. We allow threaded comments upto 12 levels
+    wbs = models.CharField(max_length=60)
 
     def reply(self, text, author):
         comment = Comment()

@@ -99,19 +99,37 @@ h1 {
 }
 .indent-1 {} 
 .indent-2 {
-    margin-left: 40px;
+    margin-left: 10px;
 }
 .indent-3 {
-    margin-left: 80px;
+    margin-left: 20px;
 }
 .indent-4 {
-    margin-left: 120px;
+    margin-left: 30px;
 }
 .indent-5 {
-    margin-left: 160px;
+    margin-left: 40px;
 }
 .indent-6 {
-    margin-left: 200px;
+    margin-left: 50px;
+}
+.indent-7 {
+    margin-left: 60px;
+}
+.indent-8 {
+    margin-left: 70px;
+}
+.indent-9 {
+    margin-left: 80px;
+}
+.indent-10 {
+    margin-left: 90px;
+}
+.indent-11 {
+    margin-left: 100px;
+}
+.indent-12 {
+    margin-left: 110px;
 }
 .comment-text {
     margin-bottom: 5px;

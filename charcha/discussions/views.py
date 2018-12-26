@@ -138,6 +138,26 @@ class StartDiscussionView(LoginRequiredMixin, View):
         else:
             return render(request, "submit.html", context={"form": form})
 
+class EditDiscussion(LoginRequiredMixin, View):
+    def get(self, request, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs['post_id'])
+        form = StartDiscussionForm(instance=post)
+        context = {"form": form}
+        return render(request, "edit-discussion.html", context=context)
+
+    def post(self, request, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs['post_id'])
+        form = StartDiscussionForm(request.POST, instance=post)
+
+        if not form.is_valid():
+            context = {"form": form}
+            return render(request, "edit-discussion.html", context=context)
+        else:
+            form.save()
+        post_url = reverse('discussion', args=[post.id])
+        return HttpResponseRedirect(post_url)
+
+
 @login_required
 @require_http_methods(['POST'])
 def upvote_post(request, post_id):

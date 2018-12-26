@@ -4,7 +4,9 @@ from . import views
 urlpatterns = [
     url(r'^$', views.homepage, name="home"),
     url(r'^discuss/(?P<post_id>\d+)/$', views.DiscussionView.as_view(), name="discussion"),
+    url(r'^post/(?P<post_id>\d+)/edit$', views.EditDiscussion.as_view(), name="edit-discussion"),
     url(r'^start-discussion/$', views.StartDiscussionView.as_view(), name="start-discussion"),
+    
     url(r'^profile/me/$', views.myprofile, name="myprofile"),
     url(r'^profile/(.*)/$', views.profile, name="profile"),
     url(r'^create-profile/$', views.CreateProfileView.as_view(), name="create_profile"),

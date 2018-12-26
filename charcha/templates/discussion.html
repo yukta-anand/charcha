@@ -19,7 +19,8 @@
                by {{ post.author.username }} | 
               {{ post.score }} point{{ post.score | pluralize }} | 
               {{ comments|length }} comment{{ comments | length | pluralize }} |
-              {{ post.submission_time | naturaltime }}
+              {{ post.submission_time | naturaltime }} |
+              <a href="{% url 'edit-discussion' post.id %}">edit</a>
               {% if request.user.is_staff %}
               | <a href="{% url 'admin:discussions_post_change' post.id %}">admin</a>
               {% endif %}

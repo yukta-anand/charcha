@@ -1,41 +1,39 @@
 {% extends "base.html" %}
-{% load bootstrap %}
 {% load static %}
-{% block title %}New Discussion{% endblock %}
-
-{% block pagecss %}
-
-{% endblock %}
+{% load bootstrap %}
+{% load markdown %}
+{% block title %}Edit Discussion{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
+
+<h1>Editing Discussion</h1>
+
 <div class="row">
 <div class="col-md-4 col-sm-6">
-<h1>New Discussion</h1>
-
+<br/>
 <form method="post">
     {% csrf_token %}
     {{ form | bootstrap }}
-    <button type="submit" class="btn btn-default">Start Discussion</button>
+    <input type="submit" value="Edit Discussion" />
 </form>
-
 <br/>
 <strong>Preview</strong>
 <div class="comment-text">
   <p id="preview">
   </p>
 </div>
-
 </div></div></div>
+
 {% endblock %}
 
 {% block before-body-close %}
 <script>
-    $("#id_title").focus();
-    $('#id_text').bind('input propertychange', function() {
+    var to_markdown = function() {
         html_content = markdown.toHTML(this.value);
-        $("#preview").html(html_content)
-    });
+        $("#preview").html(html_content);
+    };
+    $('#id_text').bind('input propertychange', to_markdown);
 </script>
 <script src="{% static "markdown.min.js" %}"></script>
 {% endblock %}

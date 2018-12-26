@@ -9,8 +9,7 @@ urlpatterns = [
     
     url(r'^profile/me/$', views.myprofile, name="myprofile"),
     url(r'^profile/(.*)/$', views.profile, name="profile"),
-    url(r'^create-profile/$', views.CreateProfileView.as_view(), name="create_profile"),
-
+    
     url(r'^comments/(?P<id>\d+)/reply$', views.ReplyToComment.as_view(), name="reply_to_comment"),
     url(r'^comments/(?P<id>\d+)/edit$', views.EditComment.as_view(), name="edit_comment"),
 

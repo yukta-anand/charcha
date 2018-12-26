@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from .models import UPVOTE, DOWNVOTE, FLAG
 from .models import Post, Comment, Vote, User
 
+@login_required
 def homepage(request):
     user = None
     if request.user.is_authenticated:
@@ -35,8 +36,7 @@ class CommentForm(forms.ModelForm):
             'text': 'Markdown Supported',
         }
 
-@method_decorator(login_required, name='post')
-class DiscussionView(View):
+class DiscussionView(LoginRequiredMixin, View):
     def get(self, request, post_id):
         post = Post.objects.get_post_with_my_votes(post_id, 
                     request.user)
@@ -203,25 +203,6 @@ def undo_vote_on_comment(request, comment_id):
 @login_required
 def myprofile(request):
     return render(request, "profile.html", context={})
-
-class MyUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = User
-        fields = UserCreationForm.Meta.fields
-
-class CreateProfileView(View):
-    def post(self, request):
-        form = MyUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-            return HttpResponseRedirect('/')
-        else:
-            return render(request, "registration/create-account.html", {"form": form})
-
-    def get(self, request):
-        form = MyUserCreationForm()
-        return render(request, "registration/create-account.html", {"form": form})
 
 def profile(request, userid):
     return render(request, "profile.html", context={"user": {"id": userid}})

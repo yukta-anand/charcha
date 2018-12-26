@@ -43,24 +43,18 @@
         </div>
       </a>
     </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="primary-nav">
-      
-      <ul class="nav navbar-nav navbar-right">
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url "start-discussion" %}">new discussion</a></li>
-        <li><a href="{% url 'myprofile' %}">{{request.user.username}} | {{request.user.score}} points</a></li>
-        <li><a href="{% url "logout" %}">logout</a></li>
-        {% else %}
-        <li><a href="{% url "login" %}">login</a></li>
-        {% endif %}
-      </ul>
-    </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 {% endspaceless %}
 {% block content %}
+<div class="container-fluid">
+  <div class="alert alert-danger" role="alert">
+    We could not process your request.
+    <br/>
+    If you are trying to login, please choose <em>@hashedin.com</em> email address.
+
+  </div>
+</div>
 {% endblock %}
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>

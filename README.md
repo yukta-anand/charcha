@@ -28,7 +28,7 @@ create database charcha;
 create user charcha;
 alter user charcha with password 'charcha123';
 grant all privileges on database charcha to charcha;
-
+alter user charcha createdb;
 
 ```
 

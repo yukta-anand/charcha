@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -22,7 +23,7 @@ class User(AbstractUser):
         db_table = "users"
     
     score = models.IntegerField(default=0)
-    
+
 class Vote(models.Model):
     class Meta:
         db_table = "votes"
@@ -36,7 +37,7 @@ class Vote(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-    voter = models.ForeignKey(User, on_delete=models.PROTECT)
+    voter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     type_of_vote = models.IntegerField(choices = (
             (UPVOTE, 'Upvote'),
             (DOWNVOTE, 'Downvote'),
@@ -52,7 +53,7 @@ class Votable(models.Model):
         abstract = True
 
     votes = GenericRelation(Vote)
-    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     # denormalization to save database queries
     # flags = count of votes of type "Flag"
@@ -404,6 +405,6 @@ class Favourite(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     favourited_on = models.DateTimeField(auto_now_add=True)
     deleted_on = models.DateTimeField(blank=True, null=True)

@@ -1,5 +1,5 @@
 from django.db import models
-from charcha.discussions.models import User
+from django.conf import settings
 from pywebpush import WebPusher
 import json
 from django.conf import settings
@@ -14,7 +14,7 @@ class Subscription(models.Model):
     
     # This is a one-to-many relationship because
     # a user can have multiple devices
-    user = models.ForeignKey(User, 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, 
         related_name="subscriptions", on_delete=models.PROTECT)
     
     browser = models.CharField(max_length=100)

@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'bootstrapform',
+    'charcha.team',
+    'charcha.chat',
     'charcha.discussions',
     'charcha.pushpa',
     'social_django',

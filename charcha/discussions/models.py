@@ -9,6 +9,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import F
 from django.urls import reverse
 
+from charcha.team.models import Team
+
 # TODO: Read this from settings 
 SERVER_URL = "https://charcha.hashedin.com"
 
@@ -214,6 +216,7 @@ class Post(Votable):
             ["submission_time",],
         ]
     objects = PostsManager()
+    team = models.ForeignKey(Team, on_delete=models.PROTECT)
     title = models.CharField(max_length=120)
     url = models.URLField(blank=True)
     text = models.TextField(blank=True, max_length=8192)

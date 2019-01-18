@@ -12,6 +12,13 @@ class Team(models.Model):
 
     name = models.CharField(max_length=120)
 
+    # If a team is public, all users have access it to it
+    # also, we will not explicity define TeamMember's for this team
+    is_public = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
 class TeamMember(models.Model):
     'Mapping between Team and a User'
     class Meta:

@@ -216,7 +216,7 @@ class Post(Votable):
             ["submission_time",],
         ]
     objects = PostsManager()
-    team = models.ForeignKey(Team, on_delete=models.PROTECT)
+    team = models.ForeignKey(Team, on_delete=models.PROTECT, default=1)
     title = models.CharField(max_length=120)
     url = models.URLField(blank=True)
     text = models.TextField(blank=True, max_length=8192)

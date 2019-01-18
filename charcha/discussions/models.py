@@ -1,14 +1,13 @@
+from collections import defaultdict
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import F
 from django.urls import reverse
-
-from collections import defaultdict
 
 # TODO: Read this from settings 
 SERVER_URL = "https://charcha.hashedin.com"
@@ -21,7 +20,7 @@ class User(AbstractUser):
     """Our custom user model with a score"""
     class Meta:
         db_table = "users"
-    
+
     score = models.IntegerField(default=0)
 
 class Vote(models.Model):
@@ -30,7 +29,7 @@ class Vote(models.Model):
         index_together = [
             ["content_type", "object_id"],
         ]
-        
+
     # The following 3 fields represent the Comment or Post
     # on which a vote has been cast
     # See Generic Relations in Django's documentation
@@ -38,7 +37,8 @@ class Vote(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     voter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    type_of_vote = models.IntegerField(choices = (
+    type_of_vote = models.IntegerField(
+        choices = (
             (UPVOTE, 'Upvote'),
             (DOWNVOTE, 'Downvote'),
             (FLAG, 'Flag'),
@@ -60,13 +60,13 @@ class Votable(models.Model):
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)
     flags = models.IntegerField(default=0)
-    
+
     def upvote(self, user):
         self._vote(user, UPVOTE)
-    
+
     def downvote(self, user):
         self._vote(user, DOWNVOTE)
-    
+
     def flag(self, user):
         self._vote(user, FLAG)
 
@@ -75,10 +75,11 @@ class Votable(models.Model):
 
     def undo_vote(self, user):
         content_type = ContentType.objects.get_for_model(self)
-        votes = Vote.objects.filter(content_type=content_type.id,
+        votes = Vote.objects.filter(
+            content_type=content_type.id,
             object_id=self.id, type_of_vote__in=(UPVOTE, DOWNVOTE),
             voter=user)
-        
+
         upvotes = 0
         downvotes = 0
         for v in votes:
@@ -102,12 +103,13 @@ class Votable(models.Model):
         content_type = ContentType.objects.get_for_model(self)
         if self._already_voted(user, content_type, type_of_vote):
             return
-        elif self._voting_for_myself(user):
+        if self._voting_for_myself(user):
             return
 
         # First, save the vote
-        vote = Vote(content_object=self, voter=user, 
-            type_of_vote=type_of_vote)
+        vote = Vote(content_object=self, 
+                    voter=user,
+                    type_of_vote=type_of_vote)
         vote.save()
 
         score_delta = 0
@@ -132,10 +134,11 @@ class Votable(models.Model):
         return self.author.id == user.id
 
     def _already_voted(self, user, content_type, type_of_vote):
-        return Vote.objects.filter(content_type=content_type.id,
-                    object_id=self.id,\
-                    voter=user, type_of_vote=type_of_vote)\
-                .exists()
+        return Vote.objects.filter(
+            content_type=content_type.id,
+            object_id=self.id,\
+            voter=user, type_of_vote=type_of_vote)\
+            .exists()
 
 class PostsManager(models.Manager):
     def get_post_with_my_votes(self, post_id, user):
@@ -145,17 +148,18 @@ class PostsManager(models.Manager):
 
         if user and user.is_authenticated:
             content_type = ContentType.objects.get_for_model(Post)
-            post_votes = Vote.objects.filter(content_type=content_type.id,
+            post_votes = Vote.objects.filter(
+                content_type=content_type.id,
                 object_id=post_id, type_of_vote__in=(UPVOTE, DOWNVOTE),
                 voter=user)
-            
+
             for v in post_votes:
                 if v.type_of_vote == UPVOTE:
                     post.is_upvoted = True
                 elif v.type_of_vote == DOWNVOTE:
                     post.is_downvoted = True
         return post
-    
+
     def recent_posts_with_my_votes(self, user=None):
         posts = Post.objects\
             .annotate(score=F('upvotes') - F('downvotes'))\
@@ -174,7 +178,8 @@ class PostsManager(models.Manager):
         post_type = ContentType.objects.get_for_model(Post)
         objects = Vote.objects.\
                     only('object_id', 'type_of_vote').\
-                    filter(content_type=post_type.id,
+                    filter(
+                        content_type=post_type.id,
                         object_id__in=post_ids,
                         voter=user)
 
@@ -191,7 +196,7 @@ class PostsManager(models.Manager):
                 post.is_downvoted = True
             elif FLAG in votes_by_post[post.id]:
                 post.is_flagged = True
-            
+
         return posts
 
     def vote_type_to_string(self, vote_type):
@@ -228,14 +233,14 @@ class Post(Votable):
 
         self.num_comments = F('num_comments') + 1
         self.save(update_fields=["num_comments"])
-        
-        if(self.author.username != author.username):
+
+        if self.author.username != author.username:
             notify_users(
-                    [self.author],
-                    "%s commented on your post" % author.username,
-                    comment.text,
-                    reverse("reply_to_comment", args=[comment.id])
-                )
+                [self.author],
+                "%s commented on your post" % author.username,
+                comment.text,
+                reverse("reply_to_comment", args=[comment.id])
+            )
 
         return comment
 
@@ -245,7 +250,6 @@ class Post(Votable):
 class CommentsManager(models.Manager):
     def best_ones_first(self, post_id, user_id):
         comment_type = ContentType.objects.get_for_model(Comment)
-        
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -304,12 +308,13 @@ class Comment(Votable):
     objects = CommentsManager()
 
     post = models.ForeignKey(Post, on_delete=models.PROTECT, related_name="comments")
-    parent_comment = models.ForeignKey('self', 
-                null=True, blank=True,
-                on_delete=models.PROTECT)
+    parent_comment = models.ForeignKey(
+        'self', 
+        null=True, blank=True,
+        on_delete=models.PROTECT)
     text = models.TextField(max_length=8192)
     submission_time = models.DateTimeField(auto_now_add=True)
-    
+
     # wbs helps us to track the comments as a tree
     # Format is .0000.0000.0000.0000.0000.0000
     # This means that:
@@ -329,7 +334,7 @@ class Comment(Votable):
         comment.post.num_comments = F('num_comments') + 1
         comment.post.save()
 
-        if(comment.post.author.username != author.username):
+        if comment.post.author.username != author.username:
             notify_users(
                     [comment.post.author],
                     "%s commented on your post" % comment.author.username,
@@ -337,7 +342,7 @@ class Comment(Votable):
                     reverse("reply_to_comment", args=[comment.id])
                 )
 
-        if(comment.parent_comment.author.username != author.username):
+        if comment.parent_comment.author.username != author.username:
             notify_users(
                     [comment.parent_comment.author],
                     "%s replied to your comment" % comment.author.username,
@@ -362,7 +367,7 @@ def _find_next_wbs(post, parent_wbs=None):
             and length(wbs) = %s
             ORDER BY wbs desc
             limit 1
-            """, 
+            """,
             [post.id, parent_wbs + ".%", len(parent_wbs) + 5]
         )
         try:

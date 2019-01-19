@@ -163,10 +163,16 @@ class PostsManager(models.Manager):
         return post
 
     def recent_posts_with_my_votes(self, user=None):
-        public_posts = Post.objects.filter(team__is_public=True).select_related("author").select_related("team")
-        private_posts = Post.objects.filter(team__members__user=user).select_related("author").select_related("team")
+        public_posts = Post.objects\
+            .filter(team__is_public=True)\
+            .select_related("author")\
+            .select_related("team")
+        private_posts = Post.objects\
+            .filter(team__members__user=user)\
+            .select_related("author")\
+            .select_related("team")
         posts = public_posts.union(private_posts)
-        return posts.order_by("-submission_time")
+        return posts.order_by("-submission_time")[:100]
 
     def vote_type_to_string(self, vote_type):
         mapping = {
